@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Version>2.0.1</Version>
+    <TargetFramework>net8.0</TargetFramework>
+    <Version>3.0.0</Version>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
@@ -11,7 +11,7 @@
     <PackageId>Statica</PackageId>
     <Authors>Håkan Edling</Authors>
     <Description>Piranha Module for generating a partial page structure from local markdown files.</Description>
-    <Copyright>Copyright 2019-2022 (c) Håkan Edling</Copyright>
+    <Copyright>Copyright 2019-2024 (c) Håkan Edling</Copyright>
     <PackageTags>aspnetcore netstandard</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>statica.png</PackageIcon>
@@ -26,8 +26,8 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
-    <PackageReference Include="Piranha" Version="10.0.4" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+    <PackageReference Include="Piranha" Version="11.1.0" />
   </ItemGroup>
 
   <ItemGroup>
