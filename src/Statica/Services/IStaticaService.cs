@@ -30,7 +30,7 @@ namespace Statica.Services
 
         /// <summary>
         /// Reloads all of the structures available of
-        /// the structure identitifed by the given id.
+        /// the structure identified by the given id.
         /// </summary>
         /// <param name="id">The optional structure id</param>
         Task Reload(string id = null);

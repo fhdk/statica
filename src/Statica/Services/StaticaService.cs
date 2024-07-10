@@ -39,13 +39,9 @@ namespace Statica.Services
         /// </summary>
         /// <param name="slug">The base slug</param>
         /// <returns>The structure</returns>
-        public IStructureService GetStructure(string id)
+        public IStructureService GetStructure(string slug)
         {
-            if (_structures.TryGetValue(id, out var structure))
-            {
-                return structure;
-            }
-            return null;
+            return _structures.TryGetValue(slug, out var structure) ? structure : null;
         }
 
         /// <summary>
@@ -59,7 +55,7 @@ namespace Statica.Services
 
         /// <summary>
         /// Reloads all of the structures available of
-        /// the structure identitifed by the given id.
+        /// the structure identified by the given id.
         /// </summary>
         /// <param name="id">The optional structure id</param>
         public async Task Reload(string id = null)

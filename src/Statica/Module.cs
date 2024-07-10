@@ -37,12 +37,12 @@ namespace Statica
         /// <summary>
         /// Gets the package url.
         /// </summary>
-        public string PackageUrl => "https://www.nuget.org/packages/Statica";
+        public string PackageUrl => "";
 
         /// <summary>
         /// Gets the icon url.
         /// </summary>
-        public string IconUrl => "http://piranhacms.org/assets/icon-statica.png";
+        public string IconUrl => "";
 
         /// <summary>
         /// Initializes the module.

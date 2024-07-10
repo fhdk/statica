@@ -17,6 +17,8 @@ using Piranha;
 using Statica.Models;
 using Statica.Services;
 
+namespace Statica.Extensions;
+
 public static class StaticaExtensions
 {
     private static StaticStructure[] _structures;
@@ -43,21 +45,24 @@ public static class StaticaExtensions
     {
         foreach (var structure in _structures)
         {
-            if (structure.UseAssets)
+            switch (structure.UseAssets)
             {
-                var path = $"{ env.ContentRootPath }/{ structure.DataPath }/_assets";
-
-                // Make sure that the path exists
-                if (!Directory.Exists(path))
-                    continue;
-
-                // Add the static files provider
-                builder.UseStaticFiles(new StaticFileOptions
+                case true:
                 {
-                    FileProvider = new PhysicalFileProvider(path),
-                    RequestPath = $"/{ structure.BaseSlug }/_assets"
-                });
+                    var path = $"{ env.ContentRootPath }/{ structure.DataPath }/_assets";
 
+                    // Make sure that the path exists
+                    if (!Directory.Exists(path))
+                        continue;
+
+                    // Add the static files provider
+                    builder.UseStaticFiles(new StaticFileOptions
+                    {
+                        FileProvider = new PhysicalFileProvider(path),
+                        RequestPath = $"/{ structure.BaseSlug }/_assets"
+                    });
+                    break;
+                }
             }
         }
         return builder;

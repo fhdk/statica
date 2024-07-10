@@ -38,10 +38,7 @@ namespace Statica.Models
         /// <summary>
         /// Gets the permalink to the page.
         /// </summary>
-        public string Permalink
-        {
-            get { return "/" + (!string.IsNullOrWhiteSpace(Redirect) ? Redirect : Slug); }
-        }
+        public string Permalink => "/" + (!string.IsNullOrWhiteSpace(Redirect) ? Redirect : Slug);
 
         /// <summary>
         /// Gets/sets the created date.

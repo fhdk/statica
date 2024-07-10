@@ -20,10 +20,8 @@ namespace Statica.Services
     public class StructureService : IStructureService
     {
         // The unique id
-        private readonly string _id;
 
         // The optional title
-        private readonly string _title;
 
         // The base slug for the structure
         private readonly string _baseSlug;
@@ -32,10 +30,10 @@ namespace Statica.Services
         private readonly string _dataPath;
 
         /// The current sitemap.
-        private StaticSitemap _structure = null;
+        private StaticSitemap _structure;
 
         /// Mutex for initialization.
-        private object mutex = new object();
+        private readonly object _mutex = new();
 
         /// <summary>
         /// Default constructor.
@@ -46,10 +44,10 @@ namespace Statica.Services
         /// <param name="title">The optional title</param>
         public StructureService(string id, string baseSlug, string dataPath, string title = null)
         {
-            _id = id;
+            Id = id;
             _baseSlug = baseSlug;
             _dataPath = dataPath;
-            _title = title;
+            Title = title;
 
             if (!string.IsNullOrWhiteSpace(_baseSlug) && !_baseSlug.EndsWith("/"))
                 _baseSlug += "/";
@@ -58,35 +56,42 @@ namespace Statica.Services
         /// <summary>
         /// Gets the unique structure id.
         /// </summary>
-        public string Id => _id;
+        public string Id { get; }
 
         /// <summary>
         /// Gets the optional title.
         /// </summary>
-        public string Title => _title;
+        public string Title { get; }
 
         /// <summary>
         /// Gets the current page structure.
         /// </summary>
         public StaticSitemap Sitemap
         {
-            get {
-                // Check if the map has already been loaded
-                if (_structure == null)
+            get
+            {
+                switch (_structure)
                 {
-                    // Lock for thread safety
-                    lock (mutex)
+                    // Check if the map has already been loaded
+                    case null:
                     {
-                        if (_structure == null)
+                        // Lock for thread safety
+                        lock (_mutex)
                         {
-                            // Get the static map
-                            var structure = new StaticSitemap();
-                            structure.Items = GetStructureItemsRecursive(structure, _dataPath, _baseSlug);
+                            if (_structure == null)
+                            {
+                                // Get the static map
+                                var structure = new StaticSitemap();
+                                structure.Items = GetStructureItemsRecursive(structure, _dataPath, _baseSlug);
 
-                            _structure = structure;
+                                _structure = structure;
+                            }
                         }
+
+                        break;
                     }
                 }
+
                 return _structure;
             }
         }
@@ -98,35 +103,36 @@ namespace Statica.Services
         /// <returns>The page</returns>
         public async Task<StaticPageModel> GetPageAsync(string slug)
         {
-            if (!string.IsNullOrWhiteSpace(slug))
+            switch (string.IsNullOrWhiteSpace(slug))
             {
-                var key = _baseSlug + slug;
-
-                if (Sitemap.Routes.TryGetValue(key, out var page))
+                case false:
                 {
-                    var model = new StaticPageModel
-                    {
-                        Title = page.Title,
-                        Slug = page.Slug,
-                        Path = page.Path,
-                        Redirect = page.Redirect,
-                        Created = page.Created,
-                        LastModified = page.LastModified
-                    };
+                    var key = _baseSlug + slug;
 
-                    if (string.IsNullOrWhiteSpace(model.Redirect))
+                    if (Sitemap.Routes.TryGetValue(key, out var page))
                     {
-                        var file = new FileInfo(page.Path);
-
-                        using (var sr = new StreamReader(file.OpenRead()))
+                        var model = new StaticPageModel
                         {
-                            model.Markdown = await sr.ReadToEndAsync();
-                            model.Body = App.Markdown.Transform(model.Markdown);
-                        }
+                            Title = page.Title,
+                            Slug = page.Slug,
+                            Path = page.Path,
+                            Redirect = page.Redirect,
+                            Created = page.Created,
+                            LastModified = page.LastModified
+                        };
+
+                        if (!string.IsNullOrWhiteSpace(model.Redirect)) return model;
+                        var file = new FileInfo(page.Path);
+                        using var sr = new StreamReader(file.OpenRead());
+                        model.Markdown = await sr.ReadToEndAsync();
+                        model.Body = App.Markdown.Transform(model.Markdown);
+                        return model;
                     }
-                    return model;
+
+                    break;
                 }
             }
+
             return null;
         }
 
